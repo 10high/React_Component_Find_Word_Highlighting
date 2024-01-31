@@ -1,4 +1,4 @@
-import "./TextAreaWithFindHighlighting.css";
+import styles from "./TextAreaWithFindHighlighting.module.css";
 import { useState } from "react";
 
 import Input from "../Input/Input";
