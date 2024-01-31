@@ -6,10 +6,15 @@ import Output from "../Output/Output";
 
 export default function TextAreaWithFindHighlighting() {
   const [inputValue, setInputValue] = useState("");
+  const [selectionPositions, setSelectionPositions] = useState([0, 0]);
   return (
     <div className={styles.container}>
-      <Input inputValue={inputValue} setInputValue={setInputValue} />
-      <Output inputValue={inputValue} />
+      <Input
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        setSelectionPositions={setSelectionPositions}
+      />
+      <Output inputValue={inputValue} selectionPositions={selectionPositions} />
     </div>
   );
 }

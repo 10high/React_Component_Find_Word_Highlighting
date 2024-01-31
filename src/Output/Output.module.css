@@ -14,3 +14,22 @@
   user-select: none;
   white-space: pre-wrap;
 }
+
+.blinking__cursor {
+  margin-right: -0.2em;
+  margin-left: -0.15em;
+  font-weight: 100;
+  font-size: inherit;
+  color: #2e3d48;
+  animation: blink 2s step-end infinite;
+}
+
+@keyframes blink {
+  from,
+  to {
+    color: black;
+  }
+  50% {
+    color: transparent;
+  }
+}
