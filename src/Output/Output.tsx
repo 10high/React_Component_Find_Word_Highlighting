@@ -1,6 +1,5 @@
 import styles from "./Output.module.css";
 import { Props, TagData, PairedTagData } from "./Output.interface";
-import { useRef } from "react";
 
 const cursorEl = (
   <span key={crypto.randomUUID()} className={styles.blinking__cursor}>
@@ -123,6 +122,23 @@ function Output({ inputValue, selectionPositions }: Props) {
 
   toDisplay.push(...allSegments);
 
+  const usedKeys = [];
+
+  const getKey = (content) => {
+    console.log(usedKeys);
+    const keyUsedCount = usedKeys.filter((key) =>
+      usedKeys.includes(key)
+    ).length;
+    if (keyUsedCount > 0) {
+      const newKey = `${content}${keyUsedCount}`;
+      usedKeys.push(newKey);
+      return newKey;
+    } else {
+      usedKeys.push(content);
+      return content;
+    }
+  };
+
   const constructElement = (
     tagType: string,
     openIndex: number,
@@ -131,9 +147,10 @@ function Output({ inputValue, selectionPositions }: Props) {
     if (tagType === "cursor") {
       return cursorEl;
     } else {
+      const content = inputValueAsArr.slice(openIndex, closeIndex).join("");
       return (
-        <span key={crypto.randomUUID()} className={`${styles[tagType]}`}>
-          {inputValueAsArr.slice(openIndex, closeIndex).join("")}
+        <span key={getKey(content)} className={`${styles[tagType]}`}>
+          {content}
         </span>
       );
     }
