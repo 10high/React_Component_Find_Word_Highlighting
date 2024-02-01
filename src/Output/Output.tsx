@@ -13,7 +13,7 @@ function Output({ inputValue, selectionPositions }: Props) {
   const inputValueAsArr = inputValue.split("");
   const segmentsWithTags: TagData[] = [];
   const tagData: TagData[] = [];
-  const toDisplay = useRef<PairedTagData[]>([]);
+  const toDisplay = [];
 
   if (selectStart === selectEnd) {
     tagData.push(
@@ -121,7 +121,7 @@ function Output({ inputValue, selectionPositions }: Props) {
 
   console.log("allSegments ", allSegments);
 
-  toDisplay.current = [...allSegments];
+  toDisplay.push(...allSegments);
 
   const constructElement = (
     tagType: string,
@@ -141,7 +141,7 @@ function Output({ inputValue, selectionPositions }: Props) {
 
   return (
     <p className={styles.output}>
-      {toDisplay.current.map((segment: PairedTagData) => {
+      {toDisplay.map((segment: PairedTagData) => {
         const [[, tagType, openIndex], [, , closeIndex]] = segment;
         return constructElement(tagType, openIndex, closeIndex);
       })}
