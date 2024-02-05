@@ -1,6 +1,12 @@
 import styles from "./Input.module.css";
-import { useRef } from "react";
-import { Props, ChangeEvent, KeyEvent } from "./Input.interface";
+import { useRef, useState } from "react";
+import {
+  Props,
+  ChangeEvent,
+  KeyEvent,
+  PointerEvent,
+  SyntheticEvent,
+} from "./Input.interface";
 
 const keyCodes = new Set([
   "ArrowLeft",
@@ -14,6 +20,7 @@ const keyCodes = new Set([
 ]);
 
 function Input({ inputValue, setInputValue, setSelectionPositions }: Props) {
+  const [mouseIsDown, setMouseIsDown] = useState(false);
   const inputEl = useRef<HTMLTextAreaElement>(null);
 
   function handleKeyPress(event: KeyEvent) {
@@ -33,6 +40,18 @@ function Input({ inputValue, setInputValue, setSelectionPositions }: Props) {
     ]);
   }
 
+  function handlePointerMove(event: PointerEvent) {
+    if (mouseIsDown) {
+      const target = event.target as HTMLTextAreaElement;
+      setSelectionPositions([target.selectionStart, target.selectionEnd]);
+    }
+  }
+
+  function handleOnSelect(event: SyntheticEvent) {
+    const target = event.target as HTMLTextAreaElement;
+    setSelectionPositions([target.selectionStart, target.selectionEnd]);
+  }
+
   return (
     <textarea
       cols={40}
@@ -41,18 +60,10 @@ function Input({ inputValue, setInputValue, setSelectionPositions }: Props) {
       onChange={(event) => handleOnChange(event)}
       onKeyDown={(event) => handleKeyPress(event)}
       onKeyUp={(event) => handleKeyPress(event)}
-      onPointerDown={() =>
-        setSelectionPositions([
-          inputEl.current!.selectionStart,
-          inputEl.current!.selectionEnd,
-        ])
-      }
-      onPointerUp={() =>
-        setSelectionPositions([
-          inputEl.current!.selectionStart,
-          inputEl.current!.selectionEnd,
-        ])
-      }
+      onPointerDown={() => setMouseIsDown(true)}
+      onPointerUp={() => setMouseIsDown(false)}
+      onPointerMove={(event) => handlePointerMove(event)}
+      onSelect={(event) => handleOnSelect(event)}
       className={styles.input}
       ref={inputEl}
     />
