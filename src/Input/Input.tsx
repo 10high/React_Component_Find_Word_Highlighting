@@ -41,6 +41,18 @@ function Input({ inputValue, setInputValue, setSelectionPositions }: Props) {
       onChange={(event) => handleOnChange(event)}
       onKeyDown={(event) => handleKeyPress(event)}
       onKeyUp={(event) => handleKeyPress(event)}
+      onPointerDown={() =>
+        setSelectionPositions([
+          inputEl.current!.selectionStart,
+          inputEl.current!.selectionEnd,
+        ])
+      }
+      onPointerUp={() =>
+        setSelectionPositions([
+          inputEl.current!.selectionStart,
+          inputEl.current!.selectionEnd,
+        ])
+      }
       className={styles.input}
       ref={inputEl}
     />
