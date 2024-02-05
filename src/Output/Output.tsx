@@ -122,9 +122,9 @@ function Output({ inputValue, selectionPositions }: Props) {
 
   toDisplay.push(...allSegments);
 
-  const usedKeys = [];
+  const usedKeys: string[] = [];
 
-  const getKey = (content) => {
+  const getKey = (content: string) => {
     console.log(usedKeys);
     const keyUsedCount = usedKeys.filter((key) =>
       usedKeys.includes(key)
