@@ -1,5 +1,5 @@
 import styles from "./Input.module.css";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Props,
   ChangeEvent,
@@ -21,23 +21,18 @@ const keyCodes = new Set([
 
 function Input({ inputValue, setInputValue, setSelectionPositions }: Props) {
   const [mouseIsDown, setMouseIsDown] = useState(false);
-  const inputEl = useRef<HTMLTextAreaElement>(null);
 
   function handleKeyPress(event: KeyEvent) {
     if (keyCodes.has(event.key)) {
-      setSelectionPositions([
-        inputEl.current!.selectionStart,
-        inputEl.current!.selectionEnd,
-      ]);
+      const target = event.target as HTMLTextAreaElement;
+      setSelectionPositions([target.selectionStart, target.selectionEnd]);
     }
   }
 
   function handleOnChange(event: ChangeEvent) {
-    setInputValue(event.target.value);
-    setSelectionPositions([
-      inputEl.current!.selectionStart,
-      inputEl.current!.selectionEnd,
-    ]);
+    const target = event.target as HTMLTextAreaElement;
+    setInputValue(target.value);
+    setSelectionPositions([target.selectionStart, target.selectionEnd]);
   }
 
   function handlePointerMove(event: PointerEvent) {
@@ -65,7 +60,6 @@ function Input({ inputValue, setInputValue, setSelectionPositions }: Props) {
       onPointerMove={(event) => handlePointerMove(event)}
       onSelect={(event) => handleOnSelect(event)}
       className={styles.input}
-      ref={inputEl}
     />
   );
 }
