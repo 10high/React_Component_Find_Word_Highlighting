@@ -5,6 +5,6 @@ import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <TextAreaWithFindHighlighting />
+    <TextAreaWithFindHighlighting wordToHighlight="test" />
   </React.StrictMode>
 );

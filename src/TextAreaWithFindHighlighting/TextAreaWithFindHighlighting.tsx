@@ -4,7 +4,11 @@ import { useState } from "react";
 import Input from "../Input/Input";
 import Output from "../Output/Output";
 
-export default function TextAreaWithFindHighlighting() {
+import { Props } from "./TextAreaWithFindHighlighting.interface";
+
+export default function TextAreaWithFindHighlighting({
+  wordToHighlight,
+}: Props) {
   const [inputValue, setInputValue] = useState("");
   const [selectionPositions, setSelectionPositions] = useState([0, 0]);
   return (
@@ -14,7 +18,11 @@ export default function TextAreaWithFindHighlighting() {
         setInputValue={setInputValue}
         setSelectionPositions={setSelectionPositions}
       />
-      <Output inputValue={inputValue} selectionPositions={selectionPositions} />
+      <Output
+        inputValue={inputValue}
+        selectionPositions={selectionPositions}
+        wordToHighlight={wordToHighlight}
+      />
     </div>
   );
 }

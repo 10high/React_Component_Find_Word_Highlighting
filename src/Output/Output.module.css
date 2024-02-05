@@ -15,6 +15,10 @@
   white-space: pre-wrap;
 }
 
+.highlight {
+  color: red;
+}
+
 .blinking__cursor {
   margin-right: -0.2em;
   margin-left: -0.15em;

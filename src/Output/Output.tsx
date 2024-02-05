@@ -7,7 +7,7 @@ const cursorEl = (
   </span>
 );
 
-function Output({ inputValue, selectionPositions }: Props) {
+function Output({ inputValue, selectionPositions, wordToHighlight }: Props) {
   const [selectStart, selectEnd] = selectionPositions;
   const inputValueAsArr = inputValue.split("");
   const segmentsWithTags: TagData[] = [];
@@ -24,6 +24,17 @@ function Output({ inputValue, selectionPositions }: Props) {
       ["open", "select", selectStart],
       ["close", "select", selectEnd]
     );
+  }
+
+  const wordToHighlightRegex = new RegExp(`${wordToHighlight}`, "g");
+  const matches = [...inputValue.matchAll(wordToHighlightRegex)];
+  if (matches.length) {
+    for (const match of matches) {
+      tagData.push(
+        ["open", "highlight", match.index!],
+        ["close", "highlight", match.index! + wordToHighlight.length]
+      );
+    }
   }
 
   tagData.sort((a, b) => a[2] - b[2]);
