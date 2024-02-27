@@ -2,7 +2,7 @@ import styles from "./Output.module.css";
 import { Props, TagData, PairedTagData } from "./Output.interface";
 import { useEffect, useRef } from "react";
 
-function Output({ inputValue, selectionPositions, wordToHighlight }: Props) {
+  isCaseSensitive,
   const [selectStart, selectEnd] = selectionPositions;
   const inputValueAsArr = inputValue.split("");
   const segmentsWithTags: TagData[] = [];
@@ -24,6 +24,11 @@ function Output({ inputValue, selectionPositions, wordToHighlight }: Props) {
       );
     }
   }
+
+  const wordToHighlightRegex = new RegExp(
+    `${wordToHighlight}`,
+    `g${isCaseSensitive ? "" : "i"}`
+  );
   const matches = [...inputValue.matchAll(wordToHighlightRegex)];
   if (matches.length) {
     for (const match of matches) {
