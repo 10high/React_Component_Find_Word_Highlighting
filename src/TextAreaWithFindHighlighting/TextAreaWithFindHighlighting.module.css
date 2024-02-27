@@ -1,7 +1,9 @@
 .container {
-  font-size: 16px;
   position: relative;
-  width: 300px;
-  height: 200px;
-  border: solid 2px red;
+}
+
+.container:focus-within {
+  outline-color: currentColor;
+  outline-style: auto;
+  outline-width: 1px;
 }
