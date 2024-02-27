@@ -1,11 +1,6 @@
 import styles from "./Output.module.css";
 import { Props, TagData, PairedTagData } from "./Output.interface";
-
-const cursorEl = (
-  <span key={crypto.randomUUID()} className={styles.blinking__cursor}>
-    |
-  </span>
-);
+import { useEffect, useRef } from "react";
 
 function Output({ inputValue, selectionPositions, wordToHighlight }: Props) {
   const [selectStart, selectEnd] = selectionPositions;
@@ -148,7 +143,17 @@ function Output({ inputValue, selectionPositions, wordToHighlight }: Props) {
     closeIndex: number
   ) => {
     if (tagType === "cursor") {
-      return cursorEl;
+      return (
+        <span
+          id="caret"
+          key="caretUniqueKey"
+          className={
+            flipCursorBlinkAnim.current === true
+              ? `${styles.blinking__cursor1}`
+              : `${styles.blinking__cursor2}`
+          }
+        ></span>
+      );
     } else {
       const content = inputValueAsArr.slice(openIndex, closeIndex).join("");
       return (
