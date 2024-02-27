@@ -10,9 +10,20 @@ function Output({ inputValue, selectionPositions, wordToHighlight }: Props) {
   const toDisplay = [];
 
   const flipCursorBlinkAnim = useRef(true);
-  }
 
-  const wordToHighlightRegex = new RegExp(`${wordToHighlight}`, "g");
+  if (selectionPositions.length) {
+    if (selectStart === selectEnd) {
+      tagData.push(
+        ["open", "cursor", selectStart],
+        ["close", "cursor", selectStart]
+      );
+    } else {
+      tagData.push(
+        ["open", "select", selectStart],
+        ["close", "select", selectEnd]
+      );
+    }
+  }
   const matches = [...inputValue.matchAll(wordToHighlightRegex)];
   if (matches.length) {
     for (const match of matches) {

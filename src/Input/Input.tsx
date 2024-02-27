@@ -59,6 +59,7 @@ function Input({ inputValue, setInputValue, setSelectionPositions }: Props) {
       onPointerUp={() => setMouseIsDown(false)}
       onPointerMove={(event) => handlePointerMove(event)}
       onSelect={(event) => handleOnSelect(event)}
+      onBlur={() => setSelectionPositions([])}
       className={styles.input}
     />
   );
