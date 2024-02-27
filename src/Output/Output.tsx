@@ -2,12 +2,24 @@ import styles from "./Output.module.css";
 import { Props, TagData, PairedTagData } from "./Output.interface";
 import { useEffect, useRef } from "react";
 
+function Output({
+  inputValue,
+  selectionPositions,
+  wordToHighlight,
   isCaseSensitive,
+  textSelectionStyling,
+  wordFindHighlightingStyling,
+}: Props) {
   const [selectStart, selectEnd] = selectionPositions;
   const inputValueAsArr = inputValue.split("");
   const segmentsWithTags: TagData[] = [];
   const tagData: TagData[] = [];
   const toDisplay = [];
+
+  const tagTypeStyles = {
+    select: textSelectionStyling,
+    highlight: wordFindHighlightingStyling,
+  };
 
   const flipCursorBlinkAnim = useRef(true);
 
@@ -163,7 +175,10 @@ import { useEffect, useRef } from "react";
     } else {
       const content = inputValueAsArr.slice(openIndex, closeIndex).join("");
       return (
-        <span key={getKey(content)} className={`${styles[tagType]}`}>
+        <span
+          key={getKey(content)}
+          style={tagTypeStyles[tagType as keyof typeof tagTypeStyles]}
+        >
           {content}
         </span>
       );

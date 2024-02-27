@@ -1,16 +1,16 @@
 .input {
+  opacity: 0;
   position: absolute;
   top: 0;
   left: 0;
   z-index: 10;
-  border: solid 2px black;
   width: 100%;
   height: 100%;
-  opacity: 1;
   margin: 0;
-  padding: 0;
+  padding: inherit;
   resize: none;
   font-size: inherit;
   font-family: inherit;
   overflow-wrap: break-word;
+  line-height: inherit;
 }
