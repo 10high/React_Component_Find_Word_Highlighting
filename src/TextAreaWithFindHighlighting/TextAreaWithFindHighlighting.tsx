@@ -7,6 +7,7 @@ import Output from "../Output/Output";
 import { Props } from "./TextAreaWithFindHighlighting.interface";
 
 export default function TextAreaWithFindHighlighting({
+  wordToHighlight = "test",
   isCaseSensitive = false,
 }: Props) {
   const [inputValue, setInputValue] = useState("");
