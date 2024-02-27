@@ -128,20 +128,19 @@ import { useEffect, useRef } from "react";
   toDisplay.push(...allSegments);
 
   const usedKeys: string[] = [];
-
+  let inc = 0;
   const getKey = (content: string) => {
-    console.log(usedKeys);
-    const keyUsedCount = usedKeys.filter((key) =>
-      usedKeys.includes(key)
-    ).length;
-    if (keyUsedCount > 0) {
-      const newKey = `${content}${keyUsedCount}`;
-      usedKeys.push(newKey);
-      return newKey;
-    } else {
-      usedKeys.push(content);
-      return content;
+    let newKey = "";
+    for (const key of usedKeys) {
+      if (key === content) {
+        inc++;
+        newKey = `${content}${inc}`;
+        break;
+      }
     }
+    if (newKey === "") newKey = `${content}`;
+    usedKeys.push(newKey);
+    return newKey;
   };
 
   const constructElement = (
