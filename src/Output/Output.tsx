@@ -88,8 +88,6 @@ function Output({ inputValue, selectionPositions, wordToHighlight }: Props) {
     currentTagIndex++;
   }
 
-  console.log("Segments with tags ", segmentsWithTags);
-
   //collect tags in open and close pairs
   const taggedSegmentsInPairs: PairedTagData[] = [];
   for (let index = 0; index < segmentsWithTags.length; index += 2) {
@@ -98,8 +96,6 @@ function Output({ inputValue, selectionPositions, wordToHighlight }: Props) {
       [...segmentsWithTags[index + 1]],
     ]);
   }
-
-  console.log("taggedSegmentsInPairs ", taggedSegmentsInPairs);
 
   //collect plaintText
   const plainText: PairedTagData[] = [];
@@ -124,12 +120,8 @@ function Output({ inputValue, selectionPositions, wordToHighlight }: Props) {
     ]);
   }
 
-  console.log("plaintext ", plainText);
-
   const allSegments = [...taggedSegmentsInPairs, ...plainText];
   allSegments.sort((a, b) => a[0][2] - b[0][2]);
-
-  console.log("allSegments ", allSegments);
 
   toDisplay.push(...allSegments);
 
