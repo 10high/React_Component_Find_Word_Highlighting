@@ -9,16 +9,7 @@ function Output({ inputValue, selectionPositions, wordToHighlight }: Props) {
   const tagData: TagData[] = [];
   const toDisplay = [];
 
-  if (selectStart === selectEnd) {
-    tagData.push(
-      ["open", "cursor", selectStart],
-      ["close", "cursor", selectStart]
-    );
-  } else {
-    tagData.push(
-      ["open", "select", selectStart],
-      ["close", "select", selectEnd]
-    );
+  const flipCursorBlinkAnim = useRef(true);
   }
 
   const wordToHighlightRegex = new RegExp(`${wordToHighlight}`, "g");
@@ -163,6 +154,11 @@ function Output({ inputValue, selectionPositions, wordToHighlight }: Props) {
       );
     }
   };
+
+  useEffect(() => {
+    flipCursorBlinkAnim.current =
+      flipCursorBlinkAnim.current === true ? false : true;
+  }, [selectStart]);
 
   return (
     <p className={styles.output}>
