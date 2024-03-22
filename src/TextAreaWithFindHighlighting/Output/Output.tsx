@@ -78,7 +78,7 @@ function Output({
     for (const match of matches) {
       tagData.push(
         ["open", "highlight", match.index!],
-        ["close", "highlight", match.index! + wordToHighlight.length]
+        ["close", "highlight", match.index! + match[0].length]
       );
     }
   }
