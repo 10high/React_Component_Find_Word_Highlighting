@@ -44,6 +44,7 @@ function Output({
   const segmentsWithTags: TagData[] = [];
   const tagData: TagData[] = [];
   const toDisplay = [];
+  let regexErrorMessage = "";
 
   const tagTypeStyles = {
     select: textSelectionStyling,
@@ -73,13 +74,19 @@ function Output({
     return new RegExp(`${wordToHighlight}`, `g${isCaseSensitive ? "" : "i"}`);
   };
 
-  const matches = [...inputValue.matchAll(wordToHighlightRegex())];
-  if (matches.length) {
-    for (const match of matches) {
-      tagData.push(
-        ["open", "highlight", match.index!],
-        ["close", "highlight", match.index! + match[0].length]
-      );
+  try {
+    const matches = [...inputValue.matchAll(wordToHighlightRegex())];
+    if (matches.length) {
+      for (const match of matches) {
+        tagData.push(
+          ["open", "highlight", match.index!],
+          ["close", "highlight", match.index! + match[0].length]
+        );
+      }
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      regexErrorMessage = error.message;
     }
   }
 
@@ -224,10 +231,16 @@ function Output({
 
   return (
     <p className={styles.output}>
-      {toDisplay.map((segment: PairedTagData) => {
-        const [[, tagType, openIndex], [, , closeIndex]] = segment;
-        return constructElement(tagType, openIndex, closeIndex);
-      })}
+      {regexErrorMessage.length ? (
+        <span
+          className={styles.errorMessage}
+        >{`There is a problem with your regexp: "${regexErrorMessage}"`}</span>
+      ) : (
+        toDisplay.map((segment: PairedTagData) => {
+          const [[, tagType, openIndex], [, , closeIndex]] = segment;
+          return constructElement(tagType, openIndex, closeIndex);
+        })
+      )}
     </p>
   );
 }

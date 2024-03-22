@@ -15,6 +15,10 @@
   line-height: inherit;
 }
 
+.errorMessage {
+  color: red;
+}
+
 .blinking__cursor1 {
   margin-left: -0.05em;
   border-left: solid 1px black;
