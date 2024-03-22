@@ -19,7 +19,12 @@ const keyCodes = new Set([
   "Home",
 ]);
 
-function Input({ inputValue, setInputValue, setSelectionPositions }: Props) {
+function Input({
+  inputValue,
+  setInputValue,
+  setSelectionPositions,
+  textAreaFormDataName,
+}: Props) {
   const [mouseIsDown, setMouseIsDown] = useState(false);
 
   function handleKeyPress(event: KeyEvent) {
@@ -49,6 +54,7 @@ function Input({ inputValue, setInputValue, setSelectionPositions }: Props) {
 
   return (
     <textarea
+      name={textAreaFormDataName}
       cols={40}
       rows={2}
       value={inputValue}

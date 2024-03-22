@@ -27,6 +27,7 @@ const configureStyles = {
 export default function TextAreaWithFindHighlighting({
   wordToHighlight = "test",
   isCaseSensitive = false,
+  textAreaFormDataName = "findWordTextArea",
 }: Props) {
   const [inputValue, setInputValue] = useState("");
   const [selectionPositions, setSelectionPositions] = useState([0, 0]);
@@ -40,6 +41,7 @@ export default function TextAreaWithFindHighlighting({
         inputValue={inputValue}
         setInputValue={setInputValue}
         setSelectionPositions={setSelectionPositions}
+        textAreaFormDataName={textAreaFormDataName}
       />
       <Output
         inputValue={inputValue}

@@ -8,6 +8,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <TextAreaWithFindHighlighting
       wordToHighlight="test"
       isCaseSensitive={false}
+      textAreaFormDataName="findWordTextArea"
     />
   </React.StrictMode>
 );
