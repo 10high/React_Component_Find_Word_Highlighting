@@ -1,7 +1,7 @@
 import styles from "./TextAreaWithFindHighlighting.module.css";
 import { useState } from "react";
-import Input from "../Input/Input";
-import Output from "../Output/Output";
+import Input from "./Input/Input";
+import Output from "./Output/Output";
 import { Props } from "./TextAreaWithFindHighlighting.interface";
 
 const configureStyles = {
