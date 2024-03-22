@@ -2,6 +2,34 @@ import styles from "./Output.module.css";
 import { Props, TagData, PairedTagData } from "./Output.interface";
 import { useEffect, useRef } from "react";
 
+function regExpEscapeSpecialChars(strToEscape: string) {
+  const specialChars = [
+    "(",
+    "[",
+    ".",
+    "*",
+    "+",
+    "?",
+    "^",
+    "=",
+    "!",
+    ":",
+    "$",
+    "{",
+    "}",
+    "(",
+    ")",
+    "|",
+    "\\",
+    "]",
+    "/",
+  ];
+  return strToEscape
+    .split("")
+    .map((char) => (specialChars.includes(char) ? `\\${char}` : char))
+    .join("");
+}
+
 function Output({
   inputValue,
   selectionPositions,
@@ -9,6 +37,7 @@ function Output({
   isCaseSensitive,
   textSelectionStyling,
   wordFindHighlightingStyling,
+  useRegularExpression,
 }: Props) {
   const [selectStart, selectEnd] = selectionPositions;
   const inputValueAsArr = inputValue.split("");
@@ -37,11 +66,14 @@ function Output({
     }
   }
 
-  const wordToHighlightRegex = new RegExp(
-    `${wordToHighlight}`,
-    `g${isCaseSensitive ? "" : "i"}`
-  );
-  const matches = [...inputValue.matchAll(wordToHighlightRegex)];
+  const wordToHighlightRegex = () => {
+    if (!useRegularExpression) {
+      wordToHighlight = `${regExpEscapeSpecialChars(wordToHighlight)}`;
+    }
+    return new RegExp(`${wordToHighlight}`, `g${isCaseSensitive ? "" : "i"}`);
+  };
+
+  const matches = [...inputValue.matchAll(wordToHighlightRegex())];
   if (matches.length) {
     for (const match of matches) {
       tagData.push(

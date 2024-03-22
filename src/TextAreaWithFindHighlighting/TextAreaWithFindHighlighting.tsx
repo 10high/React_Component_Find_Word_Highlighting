@@ -28,6 +28,7 @@ export default function TextAreaWithFindHighlighting({
   wordToHighlight = "test",
   isCaseSensitive = false,
   textAreaFormDataName = "findWordTextArea",
+  useRegularExpression = true,
 }: Props) {
   const [inputValue, setInputValue] = useState("");
   const [selectionPositions, setSelectionPositions] = useState([0, 0]);
@@ -50,6 +51,7 @@ export default function TextAreaWithFindHighlighting({
         isCaseSensitive={isCaseSensitive}
         textSelectionStyling={configureStyles.textSelection}
         wordFindHighlightingStyling={configureStyles.wordFindHighlighting}
+        useRegularExpression={useRegularExpression}
       />
     </div>
   );

@@ -5,6 +5,7 @@ export type Props = {
   isCaseSensitive: boolean;
   textSelectionStyling: { color: string; backgroundColor: string };
   wordFindHighlightingStyling: { color: string };
+  useRegularExpression: boolean;
 };
 
 export type TagData = [string, string, number];
