@@ -89,10 +89,7 @@ const configureStyles = {
 - No `innerHTML` is used.
 - Only the word to find or the regular expression match is wrapped in an `<span>` element that applies the defined font color.
 
-The component is a `<textarea>` element with `opacity` set to 0 and a `<div>` element placed beneath it at a lower `z-index`to display the styled text.
-
-The component renders twice on each change. The second render is solely to flip the caret animation so that it imitates real caret behavior.
-If you don't care about about that and want to save yourself a render, you can remove the `useEffect` in the `Output.tsx` file.
+The component is a `<textarea>` element with `opacity` set to 0 and a `<p>` element placed beneath it at a lower `z-index`to display the styled text.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
