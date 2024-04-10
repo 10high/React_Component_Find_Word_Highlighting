@@ -6,6 +6,7 @@ import {
   KeyEvent,
   PointerEvent,
   SyntheticEvent,
+  ScrollEvent,
 } from "./Input.interface";
 
 const keyCodes = new Set([
@@ -24,6 +25,7 @@ function Input({
   setInputValue,
   setSelectionPositions,
   textAreaFormDataName,
+  setScrollTop,
 }: Props) {
   const [mouseIsDown, setMouseIsDown] = useState(false);
 
@@ -52,6 +54,11 @@ function Input({
     setSelectionPositions([target.selectionStart, target.selectionEnd]);
   }
 
+  function handleOnScroll(event: ScrollEvent) {
+    const target = event.target as HTMLTextAreaElement;
+    setScrollTop(target.scrollTop);
+  }
+
   return (
     <textarea
       name={textAreaFormDataName}
@@ -66,6 +73,7 @@ function Input({
       onPointerMove={(event) => handlePointerMove(event)}
       onSelect={(event) => handleOnSelect(event)}
       onBlur={() => setSelectionPositions([])}
+      onScroll={(event) => handleOnScroll(event)}
       className={styles.input}
     />
   );

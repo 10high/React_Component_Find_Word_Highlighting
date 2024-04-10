@@ -10,6 +10,7 @@
   font-size: inherit;
   font-family: inherit;
   overflow-wrap: break-word;
+  overflow-y: scroll;
   user-select: none;
   white-space: pre-wrap;
   line-height: inherit;

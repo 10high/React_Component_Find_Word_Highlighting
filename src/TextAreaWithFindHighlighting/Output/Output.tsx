@@ -38,6 +38,7 @@ function Output({
   textSelectionStyling,
   wordFindHighlightingStyling,
   useRegularExpression,
+  scrollTop,
 }: Props) {
   const [selectStart, selectEnd] = selectionPositions;
   const inputValueAsArr = inputValue.split("");
@@ -52,6 +53,7 @@ function Output({
   };
 
   const flipCursorBlinkAnim = useRef(true);
+  const outputElement = useRef<HTMLParagraphElement>(null);
 
   if (selectionPositions.length) {
     if (selectStart === selectEnd) {
@@ -229,8 +231,13 @@ function Output({
       flipCursorBlinkAnim.current === true ? false : true;
   }, [selectStart]);
 
+  useEffect(() => {
+    if (!outputElement.current) return;
+    outputElement.current.scrollTop = scrollTop;
+  }, [scrollTop]);
+
   return (
-    <p className={styles.output}>
+    <p ref={outputElement} className={styles.output}>
       {regexErrorMessage.length ? (
         <span
           className={styles.errorMessage}
