@@ -32,6 +32,7 @@ export default function TextAreaWithFindHighlighting({
 }: Props) {
   const [inputValue, setInputValue] = useState("");
   const [selectionPositions, setSelectionPositions] = useState([0, 0]);
+  const [scrollTop, setScrollTop] = useState(0);
   return (
     <div
       style={configureStyles.textArea}
@@ -43,6 +44,7 @@ export default function TextAreaWithFindHighlighting({
         setInputValue={setInputValue}
         setSelectionPositions={setSelectionPositions}
         textAreaFormDataName={textAreaFormDataName}
+        setScrollTop={setScrollTop}
       />
       <Output
         inputValue={inputValue}
@@ -52,6 +54,7 @@ export default function TextAreaWithFindHighlighting({
         textSelectionStyling={configureStyles.textSelection}
         wordFindHighlightingStyling={configureStyles.wordFindHighlighting}
         useRegularExpression={useRegularExpression}
+        scrollTop={scrollTop}
       />
     </div>
   );
