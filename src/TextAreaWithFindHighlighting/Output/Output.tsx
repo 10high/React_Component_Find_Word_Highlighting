@@ -30,10 +30,21 @@ function regExpEscapeSpecialChars(strToEscape: string) {
     .join("");
 }
 
+const wordToHighlightRegex = (
+  wordToHighlight: string,
+  useRegularExpression: boolean,
+  isCaseSensitive: boolean
+) => {
+  if (!useRegularExpression) {
+    wordToHighlight = `${regExpEscapeSpecialChars(wordToHighlight)}`;
+  }
+  return new RegExp(`${wordToHighlight}`, `g${isCaseSensitive ? "" : "i"}`);
+};
+
 function Output({
   inputValue,
   selectionPositions,
-  wordToHighlight,
+  wordsToHighlight,
   isCaseSensitive,
   textSelectionStyling,
   wordFindHighlightingStyling,
@@ -45,15 +56,35 @@ function Output({
   const segmentsWithTags: TagData[] = [];
   const tagData: TagData[] = [];
   const toDisplay = [];
-  let regexErrorMessage = "";
-
-  const tagTypeStyles = {
-    select: textSelectionStyling,
-    highlight: wordFindHighlightingStyling,
-  };
-
+  let errorMessage = "";
   const flipCursorBlinkAnim = useRef(true);
   const outputElement = useRef<HTMLParagraphElement>(null);
+
+  try {
+    if (wordFindHighlightingStyling.color.length > 9) {
+      throw new Error(
+        "You have defined too many styles for find word highlighting. The maximum permitted is nine."
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+  }
+
+  const applyTagTypeStyle = (tagType: string) => {
+    const styles = {
+      select: textSelectionStyling,
+      highlight: wordFindHighlightingStyling,
+    };
+
+    if (tagType === "plainText") return { color: "inherit" };
+    if (tagType === "select") return styles.select;
+    const index = Number(tagType.at(-1));
+    return index > wordFindHighlightingStyling.color.length - 1
+      ? { color: `${wordFindHighlightingStyling.color.at(-1)}` }
+      : { color: `${wordFindHighlightingStyling.color[index]}` };
+  };
 
   if (selectionPositions.length) {
     if (selectStart === selectEnd) {
@@ -69,26 +100,29 @@ function Output({
     }
   }
 
-  const wordToHighlightRegex = () => {
-    if (!useRegularExpression) {
-      wordToHighlight = `${regExpEscapeSpecialChars(wordToHighlight)}`;
-    }
-    return new RegExp(`${wordToHighlight}`, `g${isCaseSensitive ? "" : "i"}`);
-  };
-
-  try {
-    const matches = [...inputValue.matchAll(wordToHighlightRegex())];
-    if (matches.length) {
-      for (const match of matches) {
-        tagData.push(
-          ["open", "highlight", match.index!],
-          ["close", "highlight", match.index! + match[0].length]
-        );
+  for (const [index, wordToHighlight] of wordsToHighlight.entries()) {
+    try {
+      const matches = [
+        ...inputValue.matchAll(
+          wordToHighlightRegex(
+            wordToHighlight,
+            useRegularExpression,
+            isCaseSensitive
+          )
+        ),
+      ];
+      if (matches.length) {
+        for (const match of matches) {
+          tagData.push(
+            ["open", `highlight${index}`, match.index!],
+            ["close", `highlight${index}`, match.index! + match[0].length]
+          );
+        }
       }
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      regexErrorMessage = error.message;
+    } catch (error) {
+      if (error instanceof Error) {
+        errorMessage = `There is a problem with your regexp: "${error.message}"`;
+      }
     }
   }
 
@@ -216,10 +250,7 @@ function Output({
     } else {
       const content = inputValueAsArr.slice(openIndex, closeIndex).join("");
       return (
-        <span
-          key={getKey(content)}
-          style={tagTypeStyles[tagType as keyof typeof tagTypeStyles]}
-        >
+        <span key={getKey(content)} style={applyTagTypeStyle(tagType)}>
           {content}
         </span>
       );
@@ -238,10 +269,8 @@ function Output({
 
   return (
     <p ref={outputElement} className={styles.output}>
-      {regexErrorMessage.length ? (
-        <span
-          className={styles.errorMessage}
-        >{`There is a problem with your regexp: "${regexErrorMessage}"`}</span>
+      {errorMessage.length ? (
+        <span className={styles.errorMessage}>{errorMessage}</span>
       ) : (
         toDisplay.map((segment: PairedTagData) => {
           const [[, tagType, openIndex], [, , closeIndex]] = segment;

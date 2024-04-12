@@ -20,12 +20,12 @@ const configureStyles = {
     backgroundColor: "cornflowerblue",
   },
   wordFindHighlighting: {
-    color: "red",
+    color: ["red"],
   },
 };
 
 export default function TextAreaWithFindHighlighting({
-  wordToHighlight = "test",
+  wordsToHighlight = ["test"],
   isCaseSensitive = false,
   textAreaFormDataName = "findWordTextArea",
   useRegularExpression = true,
@@ -49,7 +49,7 @@ export default function TextAreaWithFindHighlighting({
       <Output
         inputValue={inputValue}
         selectionPositions={selectionPositions}
-        wordToHighlight={wordToHighlight}
+        wordsToHighlight={wordsToHighlight}
         isCaseSensitive={isCaseSensitive}
         textSelectionStyling={configureStyles.textSelection}
         wordFindHighlightingStyling={configureStyles.wordFindHighlighting}

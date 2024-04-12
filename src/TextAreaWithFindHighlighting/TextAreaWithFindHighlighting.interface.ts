@@ -1,5 +1,5 @@
 export type Props = {
-  wordToHighlight: string;
+  wordsToHighlight: string[];
   isCaseSensitive: boolean;
   textAreaFormDataName: string;
   useRegularExpression: boolean;
