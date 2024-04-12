@@ -54,7 +54,7 @@ This React component can simply be copied into your existing project and accepts
 
 ```javascript
 <TextAreaWithFindHighlighting
-  wordToHighlight="string"
+  wordsToHighlight=["string", "string"]
   isCaseSensitive={true}
   textAreaFormDataName="string"
   useRegularExpression={false}
@@ -80,14 +80,15 @@ const configureStyles = {
     backgroundColor: "cornflowerblue",
   },
   wordFindHighlighting: {
-    color: "red",
+    color: ["red", "blue"],
   },
 };
 ```
 
 - All user input is treated as data.
 - No `innerHTML` is used.
-- Only the word to find or the regular expression match is wrapped in an `<span>` element that applies the defined font color.
+- Only the words to find or the regular expression matches are wrapped in an `<span>` element that applies the defined font color.
+- The find word highlighting colors are index matched to the words to find. If the number of words to find is greater than the number of defined colors, the last defined color is used for the extra words.
 
 The component is a `<textarea>` element with `opacity` set to 0 and a `<p>` element placed beneath it at a lower `z-index`to display the styled text.
 
