@@ -30,10 +30,21 @@ function regExpEscapeSpecialChars(strToEscape: string) {
     .join("");
 }
 
+const wordToHighlightRegex = (
+  wordToHighlight: string,
+  useRegularExpression: boolean,
+  isCaseSensitive: boolean
+) => {
+  if (!useRegularExpression) {
+    wordToHighlight = `${regExpEscapeSpecialChars(wordToHighlight)}`;
+  }
+  return new RegExp(`${wordToHighlight}`, `g${isCaseSensitive ? "" : "i"}`);
+};
+
 function Output({
   inputValue,
   selectionPositions,
-  wordToHighlight,
+  wordsToHighlight,
   isCaseSensitive,
   textSelectionStyling,
   wordFindHighlightingStyling,
@@ -69,26 +80,29 @@ function Output({
     }
   }
 
-  const wordToHighlightRegex = () => {
-    if (!useRegularExpression) {
-      wordToHighlight = `${regExpEscapeSpecialChars(wordToHighlight)}`;
-    }
-    return new RegExp(`${wordToHighlight}`, `g${isCaseSensitive ? "" : "i"}`);
-  };
-
-  try {
-    const matches = [...inputValue.matchAll(wordToHighlightRegex())];
-    if (matches.length) {
-      for (const match of matches) {
-        tagData.push(
-          ["open", "highlight", match.index!],
-          ["close", "highlight", match.index! + match[0].length]
-        );
+  for (const wordToHighlight of wordsToHighlight) {
+    try {
+      const matches = [
+        ...inputValue.matchAll(
+          wordToHighlightRegex(
+            wordToHighlight,
+            useRegularExpression,
+            isCaseSensitive
+          )
+        ),
+      ];
+      if (matches.length) {
+        for (const match of matches) {
+          tagData.push(
+            ["open", "highlight", match.index!],
+            ["close", "highlight", match.index! + match[0].length]
+          );
+        }
       }
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      regexErrorMessage = error.message;
+    } catch (error) {
+      if (error instanceof Error) {
+        regexErrorMessage = error.message;
+      }
     }
   }
 
