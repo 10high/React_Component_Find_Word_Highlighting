@@ -6,7 +6,7 @@ import "./index.css";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <TextAreaWithFindHighlighting
-      wordToHighlight="test"
+      wordsToHighlight={["test"]}
       isCaseSensitive={false}
       textAreaFormDataName="findWordTextArea"
       useRegularExpression={false}
