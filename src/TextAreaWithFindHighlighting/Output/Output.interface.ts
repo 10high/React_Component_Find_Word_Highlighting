@@ -4,7 +4,7 @@ export type Props = {
   wordsToHighlight: string[];
   isCaseSensitive: boolean;
   textSelectionStyling: { color: string; backgroundColor: string };
-  wordFindHighlightingStyling: { color: string };
+  wordFindHighlightingStyling: { color: string[] };
   useRegularExpression: boolean;
   scrollTop: number;
 };

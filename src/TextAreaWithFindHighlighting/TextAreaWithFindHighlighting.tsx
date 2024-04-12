@@ -20,7 +20,7 @@ const configureStyles = {
     backgroundColor: "cornflowerblue",
   },
   wordFindHighlighting: {
-    color: "red",
+    color: ["red"],
   },
 };
 
