@@ -156,6 +156,16 @@ function Output({
       continue;
     }
 
+    if (tag === "open" && tagType !== "cursor" && nextTagType === "cursor") {
+      segmentsWithTags.push(
+        [...currentTagData],
+        ["close", tagType, nextTagIndex]
+      );
+      tagData.splice(currentTagIndex + 3, 0, ["open", tagType, nextTagIndex]);
+      currentTagIndex++;
+      continue;
+    }
+
     if (tag === "open" && tagType !== nextTagType) {
       segmentsWithTags.push(
         [...currentTagData],
