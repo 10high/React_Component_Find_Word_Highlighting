@@ -55,6 +55,7 @@ function Output({
   const inputValueAsArr = inputValue.split("");
   const segmentsWithTags: TagData[] = [];
   const tagData: TagData[] = [];
+  const closedHighlightTags: TagData[] = [];
   const toDisplay = [];
   let errorMessage = "";
   const flipCursorBlinkAnim = useRef(true);
@@ -86,20 +87,6 @@ function Output({
       : { color: `${wordFindHighlightingStyling.color[index]}` };
   };
 
-  if (selectionPositions.length) {
-    if (selectStart === selectEnd) {
-      tagData.push(
-        ["open", "cursor", selectStart],
-        ["close", "cursor", selectStart]
-      );
-    } else {
-      tagData.push(
-        ["open", "select", selectStart],
-        ["close", "select", selectEnd]
-      );
-    }
-  }
-
   for (const [index, wordToHighlight] of wordsToHighlight.entries()) {
     try {
       const matches = [
@@ -128,10 +115,11 @@ function Output({
 
   tagData.sort((a, b) => a[2] - b[2]);
 
+  //First open/close nested highlight tags
   let currentTagIndex = 0;
   while (currentTagIndex < tagData.length) {
     const currentTagData = tagData[currentTagIndex];
-    const [, prevTagType, prevTagIndex] = segmentsWithTags.at(-1) || [
+    const [, prevTagType, prevTagIndex] = closedHighlightTags.at(-1) || [
       "",
       "",
       -1,
@@ -143,14 +131,69 @@ function Output({
       -1,
     ];
 
+    if (tag === "open" && tagType !== nextTagType) {
+      closedHighlightTags.push(
+        [...currentTagData],
+        ["close", tagType, nextTagIndex]
+      );
+      currentTagIndex++;
+      continue;
+    }
+
+    if (tag === "close" && tagType !== prevTagType) {
+      closedHighlightTags.push(
+        ["open", tagType, prevTagIndex],
+        [...currentTagData]
+      );
+      currentTagIndex++;
+      continue;
+    }
+
+    closedHighlightTags.push([...currentTagData]);
+    currentTagIndex++;
+  }
+
+  //Now add selection or cursor tags into the mix
+  if (selectionPositions.length) {
+    if (selectStart === selectEnd) {
+      closedHighlightTags.push(
+        ["open", "cursor", selectStart],
+        ["close", "cursor", selectStart]
+      );
+    } else {
+      closedHighlightTags.push(
+        ["open", "select", selectStart],
+        ["close", "select", selectEnd]
+      );
+    }
+  }
+
+  closedHighlightTags.sort((a, b) => a[2] - b[2]);
+
+  //Now close/open highlight tags with nested selection or cursor tags
+  currentTagIndex = 0;
+  while (currentTagIndex < closedHighlightTags.length) {
+    const currentTagData = closedHighlightTags[currentTagIndex];
+    const [, prevTagType, prevTagIndex] = segmentsWithTags.at(-1) || [
+      "",
+      "",
+      -1,
+    ];
+    const [tag, tagType] = currentTagData;
+    const [, nextTagType, nextTagIndex] = closedHighlightTags[
+      currentTagIndex + 1
+    ] || ["", "", -1];
+
     if (tagType === "select") {
-      const closeSelectIndex = tagData.findLastIndex((tag: TagData) => {
-        const [, tagType] = tag;
-        return tagType === "select";
-      });
+      const closeSelectIndex = closedHighlightTags.findLastIndex(
+        (tag: TagData) => {
+          const [, tagType] = tag;
+          return tagType === "select";
+        }
+      );
       segmentsWithTags.push(
         [...currentTagData],
-        [...tagData[closeSelectIndex]]
+        [...closedHighlightTags[closeSelectIndex]]
       );
       currentTagIndex = closeSelectIndex + 1;
       continue;
@@ -161,7 +204,11 @@ function Output({
         [...currentTagData],
         ["close", tagType, nextTagIndex]
       );
-      tagData.splice(currentTagIndex + 3, 0, ["open", tagType, nextTagIndex]);
+      closedHighlightTags.splice(currentTagIndex + 3, 0, [
+        "open",
+        tagType,
+        nextTagIndex,
+      ]);
       currentTagIndex++;
       continue;
     }
@@ -183,9 +230,12 @@ function Output({
       currentTagIndex++;
       continue;
     }
+
     segmentsWithTags.push([...currentTagData]);
     currentTagIndex++;
   }
+
+  //console.log(segmentsWithTags);
 
   //collect tags in open and close pairs
   const taggedSegmentsInPairs: PairedTagData[] = [];
