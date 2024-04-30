@@ -87,7 +87,10 @@ function Output({
       : { color: `${wordFindHighlightingStyling.color[index]}` };
   };
 
-  for (const [index, wordToHighlight] of wordsToHighlight.entries()) {
+  const filteredWordsToHighlight = wordsToHighlight.filter(
+    (word) => word.length
+  );
+  for (const [index, wordToHighlight] of filteredWordsToHighlight.entries()) {
     try {
       const matches = [
         ...inputValue.matchAll(
