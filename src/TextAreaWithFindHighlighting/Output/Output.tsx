@@ -1,9 +1,9 @@
 import styles from "./Output.module.css";
 import { Props, TagData, PairedTagData } from "./Output.interface";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { wordToHighlightRegex, applyTagTypeStyle } from "./utils";
 
-function Output({
+const Output = memo(function Output({
   inputValue,
   selectionPositions,
   wordsToHighlight,
@@ -283,6 +283,6 @@ function Output({
       )}
     </p>
   );
-}
+});
 
 export default Output;
