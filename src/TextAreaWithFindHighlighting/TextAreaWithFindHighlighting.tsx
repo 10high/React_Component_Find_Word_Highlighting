@@ -1,5 +1,5 @@
 import styles from "./TextAreaWithFindHighlighting.module.css";
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import Input from "./Input/Input";
 import Output from "./Output/Output";
 import { Props } from "./TextAreaWithFindHighlighting.interface";
@@ -34,6 +34,19 @@ const TextAreaWithFindHighlighting = memo(
     const [inputValue, setInputValue] = useState("");
     const [selectionPositions, setSelectionPositions] = useState([0, 0]);
     const [scrollTop, setScrollTop] = useState(0);
+
+    const wordFindHighlightingStyling = useMemo(() => {
+      return configureStyles.wordFindHighlighting;
+    }, []);
+
+    const textSelectionStyling = useMemo(() => {
+      return configureStyles.textSelection;
+    }, []);
+
+    const memoSelectionPositions = useMemo(() => {
+      return selectionPositions;
+    }, [selectionPositions]);
+
     return (
       <div
         style={configureStyles.textArea}
@@ -49,11 +62,11 @@ const TextAreaWithFindHighlighting = memo(
         />
         <Output
           inputValue={inputValue}
-          selectionPositions={selectionPositions}
+          selectionPositions={memoSelectionPositions}
           wordsToHighlight={wordsToHighlight}
           isCaseSensitive={isCaseSensitive}
-          textSelectionStyling={configureStyles.textSelection}
-          wordFindHighlightingStyling={configureStyles.wordFindHighlighting}
+          textSelectionStyling={textSelectionStyling}
+          wordFindHighlightingStyling={wordFindHighlightingStyling}
           useRegularExpression={useRegularExpression}
           scrollTop={scrollTop}
         />
