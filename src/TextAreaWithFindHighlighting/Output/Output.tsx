@@ -1,45 +1,7 @@
 import styles from "./Output.module.css";
 import { Props, TagData, PairedTagData } from "./Output.interface";
 import { useEffect, useRef } from "react";
-
-function regExpEscapeSpecialChars(strToEscape: string) {
-  const specialChars = [
-    "(",
-    "[",
-    ".",
-    "*",
-    "+",
-    "?",
-    "^",
-    "=",
-    "!",
-    ":",
-    "$",
-    "{",
-    "}",
-    "(",
-    ")",
-    "|",
-    "\\",
-    "]",
-    "/",
-  ];
-  return strToEscape
-    .split("")
-    .map((char) => (specialChars.includes(char) ? `\\${char}` : char))
-    .join("");
-}
-
-const wordToHighlightRegex = (
-  wordToHighlight: string,
-  useRegularExpression: boolean,
-  isCaseSensitive: boolean
-) => {
-  if (!useRegularExpression) {
-    wordToHighlight = `${regExpEscapeSpecialChars(wordToHighlight)}`;
-  }
-  return new RegExp(`${wordToHighlight}`, `g${isCaseSensitive ? "" : "i"}`);
-};
+import { wordToHighlightRegex, applyTagTypeStyle } from "./utils";
 
 function Output({
   inputValue,
@@ -72,20 +34,6 @@ function Output({
       errorMessage = error.message;
     }
   }
-
-  const applyTagTypeStyle = (tagType: string) => {
-    const styles = {
-      select: textSelectionStyling,
-      highlight: wordFindHighlightingStyling,
-    };
-
-    if (tagType === "plainText") return { color: "inherit" };
-    if (tagType === "select") return styles.select;
-    const index = Number(tagType.at(-1));
-    return index > wordFindHighlightingStyling.color.length - 1
-      ? { color: `${wordFindHighlightingStyling.color.at(-1)}` }
-      : { color: `${wordFindHighlightingStyling.color[index]}` };
-  };
 
   const filteredWordsToHighlight = wordsToHighlight.filter(
     (word) => word.length
@@ -313,7 +261,14 @@ function Output({
     } else {
       const content = inputValueAsArr.slice(openIndex, closeIndex).join("");
       return (
-        <span key={getKey(content)} style={applyTagTypeStyle(tagType)}>
+        <span
+          key={getKey(content)}
+          style={applyTagTypeStyle(
+            tagType,
+            textSelectionStyling,
+            wordFindHighlightingStyling
+          )}
+        >
           {content}
         </span>
       );
