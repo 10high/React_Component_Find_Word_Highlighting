@@ -1,7 +1,11 @@
 import styles from "./Output.module.css";
 import { Props, TagData, PairedTagData } from "./Output.interface";
-import { memo, useEffect, useRef } from "react";
-import { wordToHighlightRegex, applyTagTypeStyle } from "./utils";
+import { memo, useEffect, useRef, useState } from "react";
+import {
+  applyTagTypeStyle,
+  testHighlightStyles,
+  getWordsToHighlight,
+} from "./utils";
 
 const Output = memo(function Output({
   inputValue,
@@ -13,56 +17,27 @@ const Output = memo(function Output({
   useRegularExpression,
   scrollTop,
 }: Props) {
+  const [errorMessage, setErrorMessage] = useState("");
   const [selectStart, selectEnd] = selectionPositions;
   const inputValueAsArr = inputValue.split("");
   const segmentsWithTags: TagData[] = [];
   const tagData: TagData[] = [];
   const closedHighlightTags: TagData[] = [];
   const toDisplay = [];
-  let errorMessage = "";
   const flipCursorBlinkAnim = useRef(true);
   const outputElement = useRef<HTMLParagraphElement>(null);
 
-  try {
-    if (wordFindHighlightingStyling.color.length > 9) {
-      throw new Error(
-        "You have defined too many styles for find word highlighting. The maximum permitted is nine."
-      );
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-  }
+  testHighlightStyles(wordFindHighlightingStyling, setErrorMessage);
 
-  const filteredWordsToHighlight = wordsToHighlight.filter(
-    (word) => word.length
+  tagData.push(
+    ...getWordsToHighlight(
+      wordsToHighlight,
+      inputValue,
+      useRegularExpression,
+      isCaseSensitive,
+      setErrorMessage
+    )
   );
-  for (const [index, wordToHighlight] of filteredWordsToHighlight.entries()) {
-    try {
-      const matches = [
-        ...inputValue.matchAll(
-          wordToHighlightRegex(
-            wordToHighlight,
-            useRegularExpression,
-            isCaseSensitive
-          )
-        ),
-      ];
-      if (matches.length) {
-        for (const match of matches) {
-          tagData.push(
-            ["open", `highlight${index}`, match.index!],
-            ["close", `highlight${index}`, match.index! + match[0].length]
-          );
-        }
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        errorMessage = `There is a problem with your regexp: "${error.message}"`;
-      }
-    }
-  }
 
   tagData.sort((a, b) => a[2] - b[2]);
 
