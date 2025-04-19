@@ -5,6 +5,7 @@ import {
   applyTagTypeStyle,
   testHighlightStyles,
   getWordsToHighlight,
+  getClosedHighlightTags,
 } from "./utils";
 
 const Output = memo(function Output({
@@ -41,63 +42,13 @@ const Output = memo(function Output({
 
   tagData.sort((a, b) => a[2] - b[2]);
 
-  //First open/close nested highlight tags
-  let currentTagIndex = 0;
-  while (currentTagIndex < tagData.length) {
-    const currentTagData = tagData[currentTagIndex];
-    const [, prevTagType, prevTagIndex] = closedHighlightTags.at(-1) || [
-      "",
-      "",
-      -1,
-    ];
-    const [tag, tagType] = currentTagData;
-    const [, nextTagType, nextTagIndex] = tagData[currentTagIndex + 1] || [
-      "",
-      "",
-      -1,
-    ];
-
-    if (tag === "open" && tagType !== nextTagType) {
-      closedHighlightTags.push(
-        [...currentTagData],
-        ["close", tagType, nextTagIndex]
-      );
-      currentTagIndex++;
-      continue;
-    }
-
-    if (tag === "close" && tagType !== prevTagType) {
-      closedHighlightTags.push(
-        ["open", tagType, prevTagIndex],
-        [...currentTagData]
-      );
-      currentTagIndex++;
-      continue;
-    }
-
-    closedHighlightTags.push([...currentTagData]);
-    currentTagIndex++;
-  }
-
-  //Now add selection or cursor tags into the mix
-  if (selectionPositions.length) {
-    if (selectStart === selectEnd) {
-      closedHighlightTags.push(
-        ["open", "cursor", selectStart],
-        ["close", "cursor", selectStart]
-      );
-    } else {
-      closedHighlightTags.push(
-        ["open", "select", selectStart],
-        ["close", "select", selectEnd]
-      );
-    }
-  }
-
+  closedHighlightTags.push(
+    ...getClosedHighlightTags(tagData, selectionPositions)
+  );
   closedHighlightTags.sort((a, b) => a[2] - b[2]);
 
   //Now close/open highlight tags with nested selection or cursor tags
-  currentTagIndex = 0;
+  let currentTagIndex = 0;
   while (currentTagIndex < closedHighlightTags.length) {
     const currentTagData = closedHighlightTags[currentTagIndex];
     const [, prevTagType, prevTagIndex] = segmentsWithTags.at(-1) || [

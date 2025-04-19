@@ -121,3 +121,64 @@ export function getWordsToHighlight(
   }
   return forTagData;
 }
+
+export const getClosedHighlightTags = (
+  tagData: TagData[],
+  selectionPositions: number[]
+) => {
+  const forClosedHighlightTags: TagData[] = [];
+  //First open/close nested highlight tags
+  let currentTagIndex = 0;
+  while (currentTagIndex < tagData.length) {
+    const currentTagData = tagData[currentTagIndex];
+    const [, prevTagType, prevTagIndex] = forClosedHighlightTags.at(-1) || [
+      "",
+      "",
+      -1,
+    ];
+    const [tag, tagType] = currentTagData;
+    const [, nextTagType, nextTagIndex] = tagData[currentTagIndex + 1] || [
+      "",
+      "",
+      -1,
+    ];
+
+    if (tag === "open" && tagType !== nextTagType) {
+      forClosedHighlightTags.push(
+        [...currentTagData],
+        ["close", tagType, nextTagIndex]
+      );
+      currentTagIndex++;
+      continue;
+    }
+
+    if (tag === "close" && tagType !== prevTagType) {
+      forClosedHighlightTags.push(
+        ["open", tagType, prevTagIndex],
+        [...currentTagData]
+      );
+      currentTagIndex++;
+      continue;
+    }
+
+    forClosedHighlightTags.push([...currentTagData]);
+    currentTagIndex++;
+  }
+
+  //Now add selection or cursor tags into the mix
+  if (selectionPositions.length) {
+    const [selectStart, selectEnd] = selectionPositions;
+    if (selectStart === selectEnd) {
+      forClosedHighlightTags.push(
+        ["open", "cursor", selectStart],
+        ["close", "cursor", selectStart]
+      );
+    } else {
+      forClosedHighlightTags.push(
+        ["open", "select", selectStart],
+        ["close", "select", selectEnd]
+      );
+    }
+  }
+  return forClosedHighlightTags;
+};
