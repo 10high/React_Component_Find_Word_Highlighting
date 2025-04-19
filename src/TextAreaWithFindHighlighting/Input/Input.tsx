@@ -1,5 +1,5 @@
 import styles from "./Input.module.css";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Props } from "./Input.interface";
 import {
   handleKeyPress,
@@ -9,7 +9,7 @@ import {
   handleOnScroll,
 } from "./utils";
 
-function Input({
+const Input = memo(function Input({
   inputValue,
   setInputValue,
   setSelectionPositions,
@@ -40,6 +40,6 @@ function Input({
       className={styles.input}
     />
   );
-}
+});
 
 export default Input;
