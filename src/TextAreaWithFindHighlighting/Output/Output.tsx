@@ -225,22 +225,6 @@ function Output({
 
   toDisplay.push(...allSegments);
 
-  const usedKeys: string[] = [];
-  let inc = 0;
-  const getKey = (content: string) => {
-    let newKey = "";
-    for (const key of usedKeys) {
-      if (key === content) {
-        inc++;
-        newKey = `${content}${inc}`;
-        break;
-      }
-    }
-    if (newKey === "") newKey = `${content}`;
-    usedKeys.push(newKey);
-    return newKey;
-  };
-
   const constructElement = (
     tagType: string,
     openIndex: number,
@@ -262,7 +246,7 @@ function Output({
       const content = inputValueAsArr.slice(openIndex, closeIndex).join("");
       return (
         <span
-          key={getKey(content)}
+          key={`${content}${openIndex}${closeIndex}`}
           style={applyTagTypeStyle(
             tagType,
             textSelectionStyling,
@@ -284,6 +268,8 @@ function Output({
     if (!outputElement.current) return;
     outputElement.current.scrollTop = scrollTop;
   }, [scrollTop]);
+
+  console.log("render");
 
   return (
     <p ref={outputElement} className={styles.output}>
