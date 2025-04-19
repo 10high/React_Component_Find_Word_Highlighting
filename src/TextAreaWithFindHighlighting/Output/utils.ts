@@ -182,3 +182,72 @@ export const getClosedHighlightTags = (
   }
   return forClosedHighlightTags;
 };
+
+export const getSegmentsWithTags = (closedHighlightTags: TagData[]) => {
+  const forSegmentsWithTags: TagData[] = [];
+  //Now close/open highlight tags with nested selection or cursor tags
+  let currentTagIndex = 0;
+  while (currentTagIndex < closedHighlightTags.length) {
+    const currentTagData = closedHighlightTags[currentTagIndex];
+    const [, prevTagType, prevTagIndex] = forSegmentsWithTags.at(-1) || [
+      "",
+      "",
+      -1,
+    ];
+    const [tag, tagType] = currentTagData;
+    const [, nextTagType, nextTagIndex] = closedHighlightTags[
+      currentTagIndex + 1
+    ] || ["", "", -1];
+
+    if (tagType === "select") {
+      const closeSelectIndex = closedHighlightTags.findLastIndex(
+        (tag: TagData) => {
+          const [, tagType] = tag;
+          return tagType === "select";
+        }
+      );
+      forSegmentsWithTags.push(
+        [...currentTagData],
+        [...closedHighlightTags[closeSelectIndex]]
+      );
+      currentTagIndex = closeSelectIndex + 1;
+      continue;
+    }
+
+    if (tag === "open" && tagType !== "cursor" && nextTagType === "cursor") {
+      forSegmentsWithTags.push(
+        [...currentTagData],
+        ["close", tagType, nextTagIndex]
+      );
+      closedHighlightTags.splice(currentTagIndex + 3, 0, [
+        "open",
+        tagType,
+        nextTagIndex,
+      ]);
+      currentTagIndex++;
+      continue;
+    }
+
+    if (tag === "open" && tagType !== nextTagType) {
+      forSegmentsWithTags.push(
+        [...currentTagData],
+        ["close", tagType, nextTagIndex]
+      );
+      currentTagIndex++;
+      continue;
+    }
+
+    if (tag === "close" && tagType !== prevTagType) {
+      forSegmentsWithTags.push(
+        ["open", tagType, prevTagIndex],
+        [...currentTagData]
+      );
+      currentTagIndex++;
+      continue;
+    }
+
+    forSegmentsWithTags.push([...currentTagData]);
+    currentTagIndex++;
+  }
+  return forSegmentsWithTags;
+};

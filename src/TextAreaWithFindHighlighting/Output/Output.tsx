@@ -6,6 +6,7 @@ import {
   testHighlightStyles,
   getWordsToHighlight,
   getClosedHighlightTags,
+  getSegmentsWithTags,
 } from "./utils";
 
 const Output = memo(function Output({
@@ -47,70 +48,7 @@ const Output = memo(function Output({
   );
   closedHighlightTags.sort((a, b) => a[2] - b[2]);
 
-  //Now close/open highlight tags with nested selection or cursor tags
-  let currentTagIndex = 0;
-  while (currentTagIndex < closedHighlightTags.length) {
-    const currentTagData = closedHighlightTags[currentTagIndex];
-    const [, prevTagType, prevTagIndex] = segmentsWithTags.at(-1) || [
-      "",
-      "",
-      -1,
-    ];
-    const [tag, tagType] = currentTagData;
-    const [, nextTagType, nextTagIndex] = closedHighlightTags[
-      currentTagIndex + 1
-    ] || ["", "", -1];
-
-    if (tagType === "select") {
-      const closeSelectIndex = closedHighlightTags.findLastIndex(
-        (tag: TagData) => {
-          const [, tagType] = tag;
-          return tagType === "select";
-        }
-      );
-      segmentsWithTags.push(
-        [...currentTagData],
-        [...closedHighlightTags[closeSelectIndex]]
-      );
-      currentTagIndex = closeSelectIndex + 1;
-      continue;
-    }
-
-    if (tag === "open" && tagType !== "cursor" && nextTagType === "cursor") {
-      segmentsWithTags.push(
-        [...currentTagData],
-        ["close", tagType, nextTagIndex]
-      );
-      closedHighlightTags.splice(currentTagIndex + 3, 0, [
-        "open",
-        tagType,
-        nextTagIndex,
-      ]);
-      currentTagIndex++;
-      continue;
-    }
-
-    if (tag === "open" && tagType !== nextTagType) {
-      segmentsWithTags.push(
-        [...currentTagData],
-        ["close", tagType, nextTagIndex]
-      );
-      currentTagIndex++;
-      continue;
-    }
-
-    if (tag === "close" && tagType !== prevTagType) {
-      segmentsWithTags.push(
-        ["open", tagType, prevTagIndex],
-        [...currentTagData]
-      );
-      currentTagIndex++;
-      continue;
-    }
-
-    segmentsWithTags.push([...currentTagData]);
-    currentTagIndex++;
-  }
+  segmentsWithTags.push(...getSegmentsWithTags(closedHighlightTags));
 
   //console.log(segmentsWithTags);
 
