@@ -1,5 +1,5 @@
 import styles from "./Output.module.css";
-import { Props, TagData, PairedTagData } from "./Output.interface";
+import { Props, PairedTagData } from "./Output.interface";
 import { memo, useEffect, useRef, useState } from "react";
 import {
   applyTagTypeStyle,
@@ -7,6 +7,8 @@ import {
   getWordsToHighlight,
   getClosedHighlightTags,
   getSegmentsWithTags,
+  getTaggedSegmentsInPairs,
+  getPlainText,
 } from "./utils";
 
 const Output = memo(function Output({
@@ -20,73 +22,36 @@ const Output = memo(function Output({
   scrollTop,
 }: Props) {
   const [errorMessage, setErrorMessage] = useState("");
-  const [selectStart, selectEnd] = selectionPositions;
+  const [selectStart] = selectionPositions;
   const inputValueAsArr = inputValue.split("");
-  const segmentsWithTags: TagData[] = [];
-  const tagData: TagData[] = [];
-  const closedHighlightTags: TagData[] = [];
   const toDisplay = [];
   const flipCursorBlinkAnim = useRef(true);
   const outputElement = useRef<HTMLParagraphElement>(null);
 
   testHighlightStyles(wordFindHighlightingStyling, setErrorMessage);
 
-  tagData.push(
-    ...getWordsToHighlight(
-      wordsToHighlight,
-      inputValue,
-      useRegularExpression,
-      isCaseSensitive,
-      setErrorMessage
-    )
+  const tagData = getWordsToHighlight(
+    wordsToHighlight,
+    inputValue,
+    useRegularExpression,
+    isCaseSensitive,
+    setErrorMessage
   );
-
   tagData.sort((a, b) => a[2] - b[2]);
 
-  closedHighlightTags.push(
-    ...getClosedHighlightTags(tagData, selectionPositions)
+  const closedHighlightTags = getClosedHighlightTags(
+    tagData,
+    selectionPositions
   );
   closedHighlightTags.sort((a, b) => a[2] - b[2]);
 
-  segmentsWithTags.push(...getSegmentsWithTags(closedHighlightTags));
-
-  //console.log(segmentsWithTags);
-
-  //collect tags in open and close pairs
-  const taggedSegmentsInPairs: PairedTagData[] = [];
-  for (let index = 0; index < segmentsWithTags.length; index += 2) {
-    taggedSegmentsInPairs.push([
-      [...segmentsWithTags[index]],
-      [...segmentsWithTags[index + 1]],
-    ]);
-  }
-
-  //collect plaintText
-  const plainText: PairedTagData[] = [];
-  let lastCloseIndex = 0;
-  for (const currentTagData of taggedSegmentsInPairs) {
-    const [[, , openIndex], [, , closeIndex]] = currentTagData;
-    if (openIndex === 0 || openIndex - lastCloseIndex === 0) {
-      lastCloseIndex = closeIndex;
-      continue;
-    }
-    plainText.push([
-      ["open", "plainText", lastCloseIndex],
-      ["close", "plainText", openIndex],
-    ]);
-    lastCloseIndex = closeIndex;
-  }
-
-  if (lastCloseIndex < inputValue.length) {
-    plainText.push([
-      ["open", "plainText", lastCloseIndex],
-      ["close", "plainText", inputValue.length],
-    ]);
-  }
-
-  const allSegments = [...taggedSegmentsInPairs, ...plainText];
+  const segmentsWithTags = getSegmentsWithTags(closedHighlightTags);
+  const taggedSegmentsInPairs = getTaggedSegmentsInPairs(segmentsWithTags);
+  const allSegments = [
+    ...taggedSegmentsInPairs,
+    ...getPlainText(taggedSegmentsInPairs, inputValue),
+  ];
   allSegments.sort((a, b) => a[0][2] - b[0][2]);
-
   toDisplay.push(...allSegments);
 
   const constructElement = (
@@ -133,7 +98,7 @@ const Output = memo(function Output({
     outputElement.current.scrollTop = scrollTop;
   }, [scrollTop]);
 
-  console.log("render");
+  //console.log("render");
 
   return (
     <p ref={outputElement} className={styles.output}>
