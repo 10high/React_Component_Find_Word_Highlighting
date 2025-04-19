@@ -1,8 +1,14 @@
 import styles from "./TextAreaWithFindHighlighting.module.css";
 import { memo, useMemo, useState } from "react";
-import Input from "./Input/Input";
 import Output from "./Output/Output";
 import { Props } from "./TextAreaWithFindHighlighting.interface";
+import {
+  handleOnChange,
+  handleKeyPress,
+  handlePointerMove,
+  handleOnSelect,
+  handleOnScroll,
+} from "./utils";
 
 const configureStyles = {
   textArea: {
@@ -34,6 +40,7 @@ const TextAreaWithFindHighlighting = memo(
     const [inputValue, setInputValue] = useState("");
     const [selectionPositions, setSelectionPositions] = useState([0, 0]);
     const [scrollTop, setScrollTop] = useState(0);
+    const [mouseIsDown, setMouseIsDown] = useState(false);
 
     const wordFindHighlightingStyling = useMemo(() => {
       return configureStyles.wordFindHighlighting;
@@ -53,12 +60,24 @@ const TextAreaWithFindHighlighting = memo(
         className={styles.container}
         tabIndex={0}
       >
-        <Input
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          setSelectionPositions={setSelectionPositions}
-          textAreaFormDataName={textAreaFormDataName}
-          setScrollTop={setScrollTop}
+        <textarea
+          name={textAreaFormDataName}
+          cols={40}
+          rows={2}
+          value={inputValue}
+          onChange={(event) =>
+            handleOnChange(event, setSelectionPositions, setInputValue)
+          }
+          onKeyUp={(event) => handleKeyPress(event, setSelectionPositions)}
+          onPointerDown={() => setMouseIsDown(true)}
+          onPointerUp={() => setMouseIsDown(false)}
+          onPointerMove={(event) =>
+            handlePointerMove(event, mouseIsDown, setSelectionPositions)
+          }
+          onSelect={(event) => handleOnSelect(event, setSelectionPositions)}
+          onBlur={() => setSelectionPositions([])}
+          onScroll={(event) => handleOnScroll(event, setScrollTop)}
+          className={styles.input}
         />
         <Output
           inputValue={inputValue}

@@ -3,7 +3,7 @@ import {
   ChangeEvent,
   SyntheticEvent,
   ScrollEvent,
-} from "./Input.interface";
+} from "./TextAreaWithFindHighlighting.interface";
 const keyCodes = new Set([
   "ArrowLeft",
   "ArrowRight",
