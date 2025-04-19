@@ -27,7 +27,6 @@ const Input = memo(function Input({
       onChange={(event) =>
         handleOnChange(event, setSelectionPositions, setInputValue)
       }
-      onKeyDown={(event) => handleKeyPress(event, setSelectionPositions)}
       onKeyUp={(event) => handleKeyPress(event, setSelectionPositions)}
       onPointerDown={() => setMouseIsDown(true)}
       onPointerUp={() => setMouseIsDown(false)}
