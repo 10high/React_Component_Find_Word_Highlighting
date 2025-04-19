@@ -1,4 +1,4 @@
-import { TagData } from "./Output.interface";
+import { TagData, PairedTagData } from "./Output.interface";
 
 function regExpEscapeSpecialChars(strToEscape: string) {
   const specialChars = [
@@ -250,4 +250,43 @@ export const getSegmentsWithTags = (closedHighlightTags: TagData[]) => {
     currentTagIndex++;
   }
   return forSegmentsWithTags;
+};
+
+export const getTaggedSegmentsInPairs = (segmentsWithTags: TagData[]) => {
+  const forTaggedSegmentsInPairs: PairedTagData[] = [];
+  for (let index = 0; index < segmentsWithTags.length; index += 2) {
+    forTaggedSegmentsInPairs.push([
+      [...segmentsWithTags[index]],
+      [...segmentsWithTags[index + 1]],
+    ]);
+  }
+  return forTaggedSegmentsInPairs;
+};
+
+export const getPlainText = (
+  taggedSegmentsInPairs: PairedTagData[],
+  inputValue: string
+) => {
+  const forPlainText: PairedTagData[] = [];
+  let lastCloseIndex = 0;
+  for (const currentTagData of taggedSegmentsInPairs) {
+    const [[, , openIndex], [, , closeIndex]] = currentTagData;
+    if (openIndex === 0 || openIndex - lastCloseIndex === 0) {
+      lastCloseIndex = closeIndex;
+      continue;
+    }
+    forPlainText.push([
+      ["open", "plainText", lastCloseIndex],
+      ["close", "plainText", openIndex],
+    ]);
+    lastCloseIndex = closeIndex;
+  }
+
+  if (lastCloseIndex < inputValue.length) {
+    forPlainText.push([
+      ["open", "plainText", lastCloseIndex],
+      ["close", "plainText", inputValue.length],
+    ]);
+  }
+  return forPlainText;
 };
