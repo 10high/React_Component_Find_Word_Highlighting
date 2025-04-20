@@ -1,38 +1,22 @@
 import {
-  KeyEvent,
   ChangeEvent,
   SyntheticEvent,
   ScrollEvent,
 } from "./TextAreaWithFindHighlighting.interface";
-const keyCodes = new Set([
-  "ArrowLeft",
-  "ArrowRight",
-  "ArrowUp",
-  "ArrowDown",
-  "PageUp",
-  "PageDown",
-  "End",
-  "Home",
-]);
-
-export function handleKeyPress(
-  event: KeyEvent,
-  setSelectionPositions: React.Dispatch<React.SetStateAction<number[]>>
-) {
-  if (keyCodes.has(event.key)) {
-    const target = event.target as HTMLTextAreaElement;
-    setSelectionPositions([target.selectionStart, target.selectionEnd]);
-  }
-}
 
 export function handleOnChange(
   event: ChangeEvent,
   setSelectionPositions: React.Dispatch<React.SetStateAction<number[]>>,
-  setInputValue: React.Dispatch<React.SetStateAction<string>>
+  setInputValue: React.Dispatch<React.SetStateAction<string>>,
+  ignoreSelectRef: React.MutableRefObject<boolean>
 ) {
+  ignoreSelectRef.current = true;
   const target = event.target as HTMLTextAreaElement;
   setInputValue(target.value);
   setSelectionPositions([target.selectionStart, target.selectionEnd]);
+  setTimeout(() => {
+    ignoreSelectRef.current = false;
+  }, 300);
 }
 
 export function handlePointerMove(
@@ -48,8 +32,10 @@ export function handlePointerMove(
 
 export function handleOnSelect(
   event: SyntheticEvent,
-  setSelectionPositions: React.Dispatch<React.SetStateAction<number[]>>
+  setSelectionPositions: React.Dispatch<React.SetStateAction<number[]>>,
+  ignoreSelectRef: boolean
 ) {
+  if (ignoreSelectRef) return;
   const target = event.target as HTMLTextAreaElement;
   setSelectionPositions([target.selectionStart, target.selectionEnd]);
 }
@@ -58,6 +44,7 @@ export function handleOnScroll(
   event: ScrollEvent,
   setScrollTop: React.Dispatch<React.SetStateAction<number>>
 ) {
+  console.log("onScroll");
   const target = event.target as HTMLTextAreaElement;
   setScrollTop(target.scrollTop);
 }

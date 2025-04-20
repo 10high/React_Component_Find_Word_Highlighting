@@ -1,10 +1,9 @@
 import styles from "./TextAreaWithFindHighlighting.module.css";
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import Output from "./Output/Output";
 import { Props } from "./TextAreaWithFindHighlighting.interface";
 import {
   handleOnChange,
-  handleKeyPress,
   handlePointerMove,
   handleOnSelect,
   handleOnScroll,
@@ -42,6 +41,8 @@ const TextAreaWithFindHighlighting = memo(
     const [scrollTop, setScrollTop] = useState(0);
     const [mouseIsDown, setMouseIsDown] = useState(false);
 
+    const ignoreSelectRef = useRef(false);
+
     const wordFindHighlightingStyling = useMemo(() => {
       return configureStyles.wordFindHighlighting;
     }, []);
@@ -64,17 +65,26 @@ const TextAreaWithFindHighlighting = memo(
           name={textAreaFormDataName}
           cols={40}
           rows={2}
-          value={inputValue}
           onChange={(event) =>
-            handleOnChange(event, setSelectionPositions, setInputValue)
+            handleOnChange(
+              event,
+              setSelectionPositions,
+              setInputValue,
+              ignoreSelectRef
+            )
           }
-          onKeyUp={(event) => handleKeyPress(event, setSelectionPositions)}
           onPointerDown={() => setMouseIsDown(true)}
           onPointerUp={() => setMouseIsDown(false)}
           onPointerMove={(event) =>
             handlePointerMove(event, mouseIsDown, setSelectionPositions)
           }
-          onSelect={(event) => handleOnSelect(event, setSelectionPositions)}
+          onSelect={(event) =>
+            handleOnSelect(
+              event,
+              setSelectionPositions,
+              ignoreSelectRef.current
+            )
+          }
           onBlur={() => setSelectionPositions([])}
           onScroll={(event) => handleOnScroll(event, setScrollTop)}
           className={styles.input}
