@@ -98,8 +98,6 @@ const Output = memo(function Output({
     outputElement.current.scrollTop = scrollTop;
   }, [scrollTop]);
 
-  //console.log("render");
-
   return (
     <p ref={outputElement} className={styles.output}>
       {errorMessage.length ? (
